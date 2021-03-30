@@ -31,20 +31,10 @@ async function runme() {
   await rn.run("Unavailability");
 
   await rn.run("Partnership", false, true);
-  // //   await rn.run("Partnership");
   await rn.run("Project", false, true);
   await rn.run("User");
 
 
-  // TEMP
-  // await rn.run("ZZZZZZZZZ Cord API v3", false, false);
-
 }
 
 runme();
-
-// newman run Cord_API_V3_Project.postman_collection.json -e local.postman_environment.json -g MyWorkspace.postman_globals.json -r htmlextra-showOnlyFails --delay-request 1000
-// --reporter-htmlextra-showOnlyFails
-// https://stackoverflow.com/questions/38558989/node-js-heap-out-of-memory
-// node --max-old-space-size=4096 yourFile.js
-// node --max-old-space-size=8096 runall.js
