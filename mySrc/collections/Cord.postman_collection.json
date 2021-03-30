@@ -1,0 +1,625 @@
+{
+	"info": {
+		"_postman_id": "0be3f766-e5bf-4671-8f55-cc43007ed135",
+		"name": "Cord",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Session",
+			"item": [
+				{
+					"name": "createSession",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"var response = pm.response.json();\r",
+									"pm.environment.set(\"token\", response.data.createSession.token);\r",
+									"\r",
+									"pm.environment.set(\"RandomDay\", _.random(1,28));\r",
+									"\r",
+									"pm.environment.set(\"RandomMonth\", _.random(1,12));\r",
+									"\r",
+									"pm.environment.set(\"RandomYear\", _.random(1,10000));\r",
+									"\r",
+									"/*const dateNow = new Date();\r",
+									"postman.setGlobalVariable(\"currentDate\", dateNow.toLocaleDateString());\r",
+									"*/\r",
+									"\r",
+									"const moment = require('moment');\r",
+									"pm.globals.set(\"timeStamp\", moment().format(\"DDMYYYYhhmmss\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "# Write your query or mutation here\r\n\r\nmutation {\r\n      createSession {\r\n        token\r\n      }\r\n    }\r\n",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users - UnAthorized",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"",
+									"pm.test(\"Response boy has status code is 401\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors[0].message.statusCode).to.eql(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\r\n  users\r\n  {\r\n    total\r\n     items {\r\n      id\r\n      createdAt\r\n      email\r\n      {\r\n        value\r\n      }\r\n    }\r\n      \r\n   }\r\n}\r\n\r\n\r\n",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users - Authorized",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"var schema = {",
+									"\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+									"\t\"type\": \"object\",",
+									"\t\"properties\": {",
+									"\t\t\"data\": {",
+									"\t\t\t\"type\": \"object\",",
+									"\t\t\t\"properties\": {",
+									"\t\t\t\t\"users\": {",
+									"\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\"total\": {",
+									"\t\t\t\t\t\t\t\"type\": \"integer\"",
+									"\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\"items\": {",
+									"\t\t\t\t\t\t\t\"type\": \"array\",",
+									"\t\t\t\t\t\t\t\"items\": [{",
+									"\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\"id\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"email\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\"",
+									"\t\t\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\"id\",",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\",",
+									"\t\t\t\t\t\t\t\t\t\"email\"",
+									"\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t}]",
+									"\t\t\t\t\t\t}",
+									"\t\t\t\t\t}",
+									"\t\t\t\t}",
+									"\t\t\t}",
+									"\t\t}",
+									"\t}",
+									"};",
+									"",
+									"var data1 = pm.response.json();",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									" ",
+									"});",
+									"",
+									"",
+									"/*pm.test('Matches personID property value', () => {",
+									"    _.each(pm.response.json(), (arrItem) => {",
+									"        if (data.users.items[0].email.value === 'gdddsdsfdf@mailinator.com') {",
+									"            throw new Error(`Array contains.....`)",
+									"        }",
+									"    })",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\r\n  users\r\n  {\r\n    total\r\n     items {\r\n      id\r\n      createdAt\r\n      email\r\n      {\r\n        value\r\n      }\r\n    }\r\n      \r\n   }\r\n}\r\n\r\n\r\n",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users - Authorized Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"var schema = {",
+									"\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+									"\t\"type\": \"object\",",
+									"\t\"properties\": {",
+									"\t\t\"data\": {",
+									"\t\t\t\"type\": \"object\",",
+									"\t\t\t\"properties\": {",
+									"\t\t\t\t\"users\": {",
+									"\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\"total\": {",
+									"\t\t\t\t\t\t\t\"type\": \"integer\"",
+									"\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\"items\": {",
+									"\t\t\t\t\t\t\t\"type\": \"array\",",
+									"\t\t\t\t\t\t\t\"items\": [{",
+									"\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\"id\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"email\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\"",
+									"\t\t\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\"id\",",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\",",
+									"\t\t\t\t\t\t\t\t\t\"email\"",
+									"\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t}]",
+									"\t\t\t\t\t\t}",
+									"\t\t\t\t\t}",
+									"\t\t\t\t}",
+									"\t\t\t}",
+									"\t\t}",
+									"\t}",
+									"};",
+									"",
+									"var data1 = pm.response.json();",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									" ",
+									"});",
+									"",
+									"",
+									"/*pm.test('Matches personID property value', () => {",
+									"    _.each(pm.response.json(), (arrItem) => {",
+									"        if (data.users.items[0].email.value === 'gdddsdsfdf@mailinator.com') {",
+									"            throw new Error(`Array contains.....`)",
+									"        }",
+									"    })",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": " query user\r\n {\r\n     user(id:\"b3xk3sL1\")\r\n  {\r\n    id\r\n    email\r\n\t  {\r\n\t    value\r\n\t  }\r\n  }\r\n }",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users - Authorized Copy Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"var schema = {",
+									"\t\"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+									"\t\"type\": \"object\",",
+									"\t\"properties\": {",
+									"\t\t\"data\": {",
+									"\t\t\t\"type\": \"object\",",
+									"\t\t\t\"properties\": {",
+									"\t\t\t\t\"users\": {",
+									"\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\"total\": {",
+									"\t\t\t\t\t\t\t\"type\": \"integer\"",
+									"\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\"items\": {",
+									"\t\t\t\t\t\t\t\"type\": \"array\",",
+									"\t\t\t\t\t\t\t\"items\": [{",
+									"\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\"id\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\"email\": {",
+									"\t\t\t\t\t\t\t\t\t\t\"type\": \"object\",",
+									"\t\t\t\t\t\t\t\t\t\t\"properties\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\": {",
+									"\t\t\t\t\t\t\t\t\t\t\t\t\"type\": \"string\"",
+									"\t\t\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\t\t\"value\"",
+									"\t\t\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t\t\t}",
+									"\t\t\t\t\t\t\t\t},",
+									"\t\t\t\t\t\t\t\t\"required\": [",
+									"\t\t\t\t\t\t\t\t\t\"id\",",
+									"\t\t\t\t\t\t\t\t\t\"createdAt\",",
+									"\t\t\t\t\t\t\t\t\t\"email\"",
+									"\t\t\t\t\t\t\t\t]",
+									"\t\t\t\t\t\t\t}]",
+									"\t\t\t\t\t\t}",
+									"\t\t\t\t\t}",
+									"\t\t\t\t}",
+									"\t\t\t}",
+									"\t\t}",
+									"\t}",
+									"};",
+									"",
+									"var data1 = pm.response.json();",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									" ",
+									"});",
+									"",
+									"",
+									"/*pm.test('Matches personID property value', () => {",
+									"    _.each(pm.response.json(), (arrItem) => {",
+									"        if (data.users.items[0].email.value === 'gdddsdsfdf@mailinator.com') {",
+									"            throw new Error(`Array contains.....`)",
+									"        }",
+									"    })",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "\r\n{\r\n  organization(id:\"cFTY_fyt\"){\r\n    name{\r\n      value\r\n    }\r\n  }\r\n}\r\n",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Users - Authorized",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1408667e-d99a-45cb-b734-8a3bc5ce679f",
+								"exec": [
+									"var schema = {",
+									"",
+									"  \"$schema\": \"http://json-schema.org/draft-04/schema#\",",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"data\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"createUser\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"user\": {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"id\": {",
+									"                  \"type\": \"string\"",
+									"                },",
+									"                \"realFirstName\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"canRead\": {",
+									"                      \"type\": \"boolean\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"canRead\"",
+									"                  ]",
+									"                },",
+									"                \"displayLastName\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"canRead\": {",
+									"                      \"type\": \"boolean\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"canRead\"",
+									"                  ]",
+									"                },",
+									"                \"email\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"canRead\": {",
+									"                      \"type\": \"boolean\"",
+									"                    },",
+									"                    \"canEdit\": {",
+									"                      \"type\": \"boolean\"",
+									"                    },",
+									"                    \"value\": {",
+									"                      \"type\": \"string\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"canRead\",",
+									"                    \"canEdit\",",
+									"                    \"value\"",
+									"                  ]",
+									"                },",
+									"                \"bio\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"canRead\": {",
+									"                      \"type\": \"boolean\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"canRead\"",
+									"                  ]",
+									"                },",
+									"                \"phone\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"value\": {",
+									"                      \"type\": \"string\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"value\"",
+									"                  ]",
+									"                }",
+									"              },",
+									"              \"required\": [",
+									"                \"id\",",
+									"                \"realFirstName\",",
+									"                \"displayLastName\",",
+									"                \"email\",",
+									"                \"bio\",",
+									"                \"phone\"",
+									"              ]",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"user\"",
+									"          ]",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"createUser\"",
+									"      ]",
+									"    }",
+									"  },",
+									"  \"required\": [",
+									"    \"data\"",
+									"  ]",
+									" };",
+									"",
+									"var data1 = pm.response.json();",
+									"",
+									"pm.test('Schema is valid', function() {",
+									"  pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									" ",
+									"});",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation{\r\n  createUser(input : \r\n    \r\n    {user: \r\n      {\r\n    \r\n        email: \"{{RandomDay}}{{RandomMonth}}{{RandomYear}}@mailinator.com\"\r\n        realFirstName:\"Firstname\"\r\n        realLastName:\"Lastname\"\r\n        password:\"test@123\"\r\n        displayFirstName: \"Test\"\r\n        displayLastName:\"User\"\r\n        phone:\"12345678\"\r\n        timezone:\"2\"\r\n        bio:\"Bio\"\r\n  }\r\n  })\r\n  {\r\n    user{\r\n      id\r\n      realFirstName{\r\n        canRead\r\n      }\r\n      displayLastName{\r\n        canRead\r\n      }\r\n      email{\r\n        canRead\r\n        canEdit\r\n        value\r\n      }\r\n      bio{\r\n        canRead\r\n      }\r\n      phone{\r\n        value\r\n      }\r\n    }\r\n  }\r\n}\r\n",
+								"variables": ""
+							},
+							"options": {
+								"graphql": {}
+							}
+						},
+						"url": {
+							"raw": "{{env}}/graphql",
+							"host": [
+								"{{env}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
